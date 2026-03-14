@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://costin10-Ten.github.io/strings/sitemap-index.xml

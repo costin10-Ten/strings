@@ -1,0 +1,240 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../layouts/BaseLayout.astro';
+
+const allArticles = await getCollection('articles');
+// Sort by FILE number descending (newest first)
+const articles = allArticles.sort((a, b) => b.data.num.localeCompare(a.data.num));
+
+const base = import.meta.env.BASE_URL;
+
+const CATEGORIES = ['全部', '記憶科技', '地下城市', 'AI社會', '生態復育', '情感科技', '🔍 彩蛋'];
+const CAT_LABELS: Record<string, string> = {
+  '全部': '全部',
+  '記憶科技': '精神汙染',
+  '地下城市': '深淵建築',
+  'AI社會': '人工意識',
+  '生態復育': '異變生態',
+  '情感科技': '情緒操縱',
+  '🔍 彩蛋': '[ 最高機密 ]',
+};
+
+const VIS_COLORS: Record<string, string> = {
+  v1: 'rgba(217,4,41,0.15)',
+  v2: 'rgba(91,158,166,0.15)',
+  v3: 'rgba(21,128,61,0.15)',
+  v4: 'rgba(0,180,216,0.15)',
+  v5: 'rgba(255,234,0,0.1)',
+};
+---
+<BaseLayout
+  title="弦音異象"
+  description="心理驚悚與推理短篇集。觀測 2040 年代生活周遭發生的所有相變、深邃與科技反噬。"
+>
+  <!-- Articles data for right sidebar -->
+  <script id="articlesData" type="application/json" set:html={JSON.stringify(
+    articles.map(a => ({ title: a.data.title, tags: a.data.tags.map(t => t.name), slug: a.slug }))
+  )} />
+  <div data-base={base} id="baseRef" style="display:none"></div>
+
+  <style>
+    @keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+
+    .hero{padding-top:56px;min-height:100svh;display:flex;flex-direction:column;justify-content:center;position:relative;overflow:hidden;}
+    .hero-bg{position:absolute;inset:0;background:radial-gradient(ellipse 60% 50% at 70% 30%,var(--accent-dim),transparent 70%),linear-gradient(180deg,var(--bg),var(--bg2));opacity:0.8;}
+    .hero-grid{position:absolute;inset:0;background-image:linear-gradient(rgba(255,255,255,.02) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.02) 1px,transparent 1px);background-size:40px 40px;mask-image:radial-gradient(ellipse 80% 80% at 50% 50%,black,transparent);}
+    .hero-content{position:relative;z-index:10;padding:60px 24px 40px;max-width:900px;margin:0 auto;width:100%;border-left:1px solid var(--accent);padding-left:40px;margin-left:20px;}
+    .hero-tag{display:inline-flex;align-items:center;gap:8px;font-family:'Share Tech Mono',monospace;font-size:.7rem;color:var(--bg);letter-spacing:.2em;text-transform:uppercase;margin-bottom:24px;padding:6px 14px;background:var(--accent);animation:fadeUp .6s ease both;font-weight:bold;}
+    .hero-title{font-family:'Noto Serif TC',serif;font-size:clamp(2.5rem,8vw,5rem);font-weight:900;line-height:1.1;letter-spacing:-.02em;margin-bottom:16px;animation:fadeUp .6s ease .1s both;color:var(--text);}
+    .hero-title .line2{color:var(--text);display:block;text-decoration:line-through;text-decoration-color:var(--accent);text-decoration-thickness:4px;}
+    .hero-title .line3{color:var(--text-dim);font-weight:400;font-size:.5em;font-family:'Noto Sans TC',sans-serif;letter-spacing:.1em;display:block;margin-top:16px;}
+    .hero-desc{font-size:1rem;color:var(--text-muted);max-width:500px;margin-bottom:40px;animation:fadeUp .6s ease .2s both;line-height:1.8;}
+    .hero-actions{display:flex;gap:16px;flex-wrap:wrap;animation:fadeUp .6s ease .3s both;}
+    .btn-primary{display:inline-flex;align-items:center;gap:8px;background:transparent;color:var(--accent);font-family:'Share Tech Mono',monospace;font-size:.85rem;letter-spacing:.15em;padding:12px 28px;border:1px solid var(--accent);font-weight:700;transition:all .2s;cursor:pointer;text-transform:uppercase;text-decoration:none;}
+    .btn-primary:hover{background:var(--accent);color:var(--bg);}
+    .btn-ghost{display:inline-flex;align-items:center;gap:8px;border:1px solid var(--border);color:var(--text-dim);font-family:'Share Tech Mono',monospace;font-size:.85rem;letter-spacing:.15em;padding:12px 28px;transition:all .2s;background:var(--surface);cursor:pointer;text-transform:uppercase;text-decoration:none;}
+    .btn-ghost:hover{border-color:var(--text);color:var(--text);}
+    .hero-stats{position:absolute;bottom:0;left:0;right:0;display:flex;border-top:1px solid var(--border);background:var(--header-bg);z-index:10;animation:fadeUp .6s ease .4s both;}
+    .stat{flex:1;text-align:center;padding:20px 10px;border-right:1px solid var(--border);}.stat:last-child{border-right:none;}
+    .stat-num{font-family:'Share Tech Mono',monospace;font-size:1.4rem;color:var(--text);display:block;font-weight:bold;}
+    .stat-label{font-size:.65rem;color:var(--accent);letter-spacing:.2em;text-transform:uppercase;margin-top:4px;font-family:'Share Tech Mono',monospace;}
+
+    .section{padding:80px 24px;max-width:900px;margin:0 auto;}
+    .sec-hd{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:32px;border-bottom:1px solid var(--border);padding-bottom:12px;}
+    .sec-title{font-family:'Share Tech Mono',monospace;font-size:.85rem;color:var(--text);letter-spacing:.2em;text-transform:uppercase;font-weight:bold;}
+    .sec-title::before{content:'[ ';color:var(--accent);}.sec-title::after{content:' ]';color:var(--accent);}
+
+    .tags-row{display:flex;gap:10px;overflow-x:auto;padding-bottom:10px;scrollbar-width:none;margin-bottom:24px;}
+    .tags-row::-webkit-scrollbar{display:none;}
+    .tag-btn{flex-shrink:0;font-family:'Share Tech Mono',monospace;font-size:.7rem;letter-spacing:.1em;padding:8px 16px;border:1px solid var(--border);background:var(--surface);color:var(--text-dim);cursor:pointer;transition:all .2s;text-transform:uppercase;}
+    .tag-btn:hover,.tag-btn.on{border-color:var(--text);color:var(--bg);background:var(--text);}
+    .divider{border:none;height:1px;background:var(--border);margin:0 24px;}
+
+    /* Cards */
+    .cards-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px;}
+    .fcard{display:flex;flex-direction:column;background:var(--surface);border:1px solid var(--border);transition:all .2s;cursor:pointer;position:relative;text-decoration:none;}
+    .fcard::before{content:'';position:absolute;left:-1px;top:20px;bottom:20px;width:3px;background:transparent;transition:background 0.2s;z-index:2;}
+    .fcard:hover::before{background:var(--accent);}
+    .fcard:hover{border-color:var(--text-muted);transform:translateY(-2px);box-shadow:4px 4px 0px rgba(0,0,0,0.3);}
+    .card-vis{height:140px;position:relative;overflow:hidden;border-bottom:1px solid var(--border);opacity:0.8;transition:opacity 0.3s;}
+    .fcard:hover .card-vis{opacity:1;}
+    .vis-inner{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:3rem;opacity:.3;font-family:monospace;color:var(--text);}
+    .vis-lines{position:absolute;inset:0;background-image:linear-gradient(var(--border) 1px,transparent 1px);background-size:100% 4px;opacity:0.3;}
+    .card-num{position:absolute;top:10px;right:10px;font-family:'Share Tech Mono',monospace;font-size:.7rem;color:var(--bg);background:var(--text);padding:2px 6px;letter-spacing:.1em;font-weight:bold;}
+    .card-body{padding:20px 24px 16px;flex:1;}
+    .card-meta{display:flex;align-items:center;gap:10px;margin-bottom:12px;flex-wrap:wrap;}
+    .card-date{font-family:'Share Tech Mono',monospace;font-size:.65rem;color:var(--text-muted);}
+    .card-title{font-family:'Noto Serif TC',serif;font-size:1.2rem;font-weight:900;color:var(--text);line-height:1.35;margin-bottom:12px;transition:color .2s;letter-spacing:0.05em;}
+    .fcard:hover .card-title{color:var(--accent);}
+    .card-excerpt{font-size:.85rem;color:var(--text-dim);line-height:1.8;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;font-family:'Noto Sans TC',sans-serif;}
+    .card-foot{padding:12px 24px;border-top:1px dashed var(--border);display:flex;align-items:center;justify-content:space-between;background:rgba(0,0,0,0.2);}
+    .card-rt{font-family:'Share Tech Mono',monospace;font-size:.65rem;color:var(--text-muted);text-transform:uppercase;}
+    .card-arrow{font-size:1rem;color:var(--text-muted);transition:transform .2s;font-family:monospace;}
+    .fcard:hover .card-arrow{color:var(--accent);transform:translateX(6px);}
+    #no-results{display:none;text-align:center;padding:40px 0;}
+
+    @media(max-width:500px){.cards-grid{grid-template-columns:1fr;}}
+    @media(max-width:680px){
+      .hero-content{padding:40px 18px 0;border-left:none;margin-left:0;}
+      .hero-stats{position:relative;border-top:1px solid var(--border);margin-top:40px;}
+      .hero-stats .stat{border-right:none;border-bottom:1px solid var(--border);padding:16px;}
+      .hero-stats .stat:last-child{border-bottom:none;}
+    }
+  </style>
+
+  <!-- HERO -->
+  <section class="hero" aria-label="主標語">
+    <div class="hero-bg" aria-hidden="true"></div>
+    <div class="hero-grid" aria-hidden="true"></div>
+    <div class="hero-content">
+      <div class="hero-tag">▸ ANOMALY ARCHIVES · CLASSIFIED</div>
+      <h1 class="hero-title">
+        弦音異象
+        <span class="line2">記憶洩漏中</span>
+        <span class="line3">心理驚悚 · 推理短篇 · 2045</span>
+      </h1>
+      <p class="hero-desc">觀測 2040 年代生活周遭發生的所有相變、深邃、與科技反噬。<br />請記住：弦音正在反向解析你的心理弱點。</p>
+      <div class="hero-actions">
+        <a class="btn-primary" href="#stories">[ 開始閱讀 ]</a>
+        <a class="btn-ghost" href={`${base}about`}>[ 世界設定 ]</a>
+      </div>
+    </div>
+    <div class="hero-stats" aria-label="統計資料">
+      <div class="stat"><span class="stat-num">{articles.length}</span><span class="stat-label">異常案件</span></div>
+      <div class="stat"><span class="stat-num">{new Set(articles.flatMap(a => a.data.tags.map(t => t.name))).size}</span><span class="stat-label">案件類型</span></div>
+      <div class="stat"><span class="stat-num">2045</span><span class="stat-label">觀測年份</span></div>
+    </div>
+  </section>
+
+  <hr class="divider" />
+
+  <!-- ARTICLES -->
+  <section class="section" id="stories" aria-label="文章列表">
+    <div class="sec-hd"><div class="sec-title">最新異常紀錄</div></div>
+
+    <!-- Filter buttons -->
+    <div class="tags-row" role="group" aria-label="類別篩選">
+      {CATEGORIES.map(cat => (
+        <button class={`tag-btn ${cat === '全部' ? 'on' : ''}`} data-cat={cat} type="button">
+          {CAT_LABELS[cat] ?? cat}
+        </button>
+      ))}
+    </div>
+
+    <!-- Cards grid -->
+    <div class="cards-grid" id="cardsGrid">
+      {articles.map(article => (
+        <a
+          class="fcard"
+          href={`${base}articles/${article.slug}`}
+          data-tags={article.data.tags.map(t => t.name).join(',')}
+          aria-label={article.data.title}
+        >
+          <div
+            class="card-vis"
+            style={`background:${VIS_COLORS[article.data.vis] ?? VIS_COLORS['v1']};`}
+          >
+            <div class="vis-inner" aria-hidden="true">{article.data.icon}</div>
+            <div class="vis-lines" aria-hidden="true"></div>
+            <div class="card-num">{article.data.num}</div>
+          </div>
+          <div class="card-body">
+            <div class="card-meta">
+              {article.data.tags.map(t => <span class={`tag ${t.cls}`}>{t.name}</span>)}
+              <span class="card-date">{article.data.date}</span>
+            </div>
+            <div class="card-title">{article.data.title}</div>
+            <div class="card-excerpt">{article.data.excerpt}</div>
+          </div>
+          <div class="card-foot">
+            <span class="card-rt">{article.data.readTime}</span>
+            <span class="card-arrow" aria-hidden="true">→</span>
+          </div>
+        </a>
+      ))}
+    </div>
+    <div id="no-results" role="status">
+      <p style="color:var(--danger);font-size:.85rem;font-family:'Share Tech Mono',monospace;">[ 查無符合權限的檔案 ]</p>
+    </div>
+  </section>
+
+  <hr class="divider" />
+
+  <!-- WORLD / CATEGORY INDEX -->
+  <section class="section" id="world" aria-label="異常類別索引">
+    <div class="sec-hd"><div class="sec-title">異常類別索引</div></div>
+    <div class="tags-row" role="group" aria-label="類別篩選">
+      {CATEGORIES.map(cat => (
+        <button class={`tag-btn ${cat === '全部' ? 'on' : ''}`} data-cat={cat} type="button">
+          {CAT_LABELS[cat] ?? cat}
+        </button>
+      ))}
+    </div>
+    <p style="font-size:.8rem;color:var(--text-muted);font-family:'Share Tech Mono',monospace;letter-spacing:.05em;margin-top:16px;">
+      // 警告：交叉比對上述案件可能導致嚴重的認知失調。請謹慎閱讀。
+    </p>
+  </section>
+
+  <script>
+    // ── Category filter ─────────────────────────────────
+    function applyFilter(cat: string) {
+      document.querySelectorAll<HTMLElement>('.tag-btn').forEach(b =>
+        b.classList.toggle('on', b.dataset.cat === cat)
+      );
+      let visible = 0;
+      document.querySelectorAll<HTMLElement>('.fcard').forEach(card => {
+        const tags = (card.dataset.tags || '').split(',');
+        const show = cat === '全部' || tags.includes(cat);
+        card.style.display = show ? 'flex' : 'none';
+        if (show) visible++;
+      });
+      const noRes = document.getElementById('no-results')!;
+      noRes.style.display = visible === 0 ? 'block' : 'none';
+    }
+
+    document.querySelectorAll<HTMLButtonElement>('.tag-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const cat = btn.dataset.cat!;
+        applyFilter(cat);
+        // Sync URL without reloading
+        const url = new URL(window.location.href);
+        if (cat === '全部') url.searchParams.delete('cat');
+        else url.searchParams.set('cat', cat);
+        history.replaceState(null, '', url.toString());
+      });
+    });
+
+    // ── Apply filter from URL param ──────────────────────
+    const params = new URLSearchParams(window.location.search);
+    const initCat = params.get('cat') || '全部';
+    applyFilter(initCat);
+
+    // Highlight nav-a based on current cat
+    document.querySelectorAll<HTMLAnchorElement>('.nav-a').forEach(a => {
+      try {
+        const u = new URL(a.href);
+        a.classList.toggle('on', u.searchParams.get('cat') === initCat);
+      } catch {}
+    });
+  </script>
+</BaseLayout>

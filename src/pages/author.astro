@@ -1,0 +1,47 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+const base = import.meta.env.BASE_URL;
+---
+<BaseLayout
+  title="作者日誌"
+  description="弦音異象作者在建立這個驚悚世界觀時，逐漸崩潰的心智演變紀錄。"
+>
+  <style>
+    .about-page{padding-top:56px;min-height:100svh;}
+    .about-hd{position:sticky;top:56px;z-index:150;background:var(--header-bg);border-bottom:1px solid var(--border);padding:0 20px;height:56px;display:flex;align-items:center;gap:12px;}
+    .btn-back{display:flex;align-items:center;gap:6px;font-family:'Share Tech Mono',monospace;font-size:.75rem;color:var(--text);background:none;border:1px solid var(--border);cursor:pointer;padding:6px 12px;transition:all .2s;white-space:nowrap;text-transform:uppercase;text-decoration:none;}
+    .btn-back:hover{background:var(--text);color:var(--bg);}
+    .rdr-ttl{font-family:'Share Tech Mono',monospace;font-size:.8rem;color:var(--text-muted);flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;text-align:center;letter-spacing:0.1em;}
+    .about-content{max-width:720px;margin:0 auto;padding:60px 24px 100px;}
+    .about-intro{margin-bottom:40px;border-left:4px solid var(--accent);padding-left:24px;}
+    .about-intro h1{font-family:'Noto Serif TC',serif;font-size:clamp(1.8rem,5vw,2.8rem);font-weight:900;line-height:1.2;margin-bottom:24px;color:var(--text);}
+    .about-intro p{font-size:.95rem;color:var(--text-dim);line-height:2;margin-bottom:1.2em;}
+    .hl{color:var(--accent);font-style:normal;font-family:'Share Tech Mono',monospace;}
+    .log-date{font-family:'Share Tech Mono',monospace;font-size:.8rem;color:var(--accent);letter-spacing:.1em;margin-bottom:8px;margin-top:2em;}
+  </style>
+
+  <div class="about-page">
+    <div class="about-hd">
+      <a class="btn-back" href={base}>[ 離開 ]</a>
+      <div class="rdr-ttl">作者日誌</div>
+    </div>
+    <main class="about-content">
+      <div class="about-intro">
+        <h1>開門與閉門間的<br /><em class="hl">心靈風暴</em></h1>
+        <p>這裡記錄了作者在建立這個驚悚世界觀時，逐漸崩潰的心智演變。</p>
+
+        <p class="log-date">[ LOG: 2026.03.10 ]</p>
+        <p>網站第一次成功掛上網路，我現在有點搞不清楚自己是小說作者還是程式設計師，都是文字的奴隸不是嗎？：<span class="redacted"></span></p>
+
+        <p class="log-date">[ LOG: 2026.02.15 ]</p>
+        <p>寫了五十篇短篇，丟掉四十九篇，剩下的那一篇只是因為它剛好沒有標題。</p>
+
+        <p class="log-date">[ LOG: 2025.09.22 ]</p>
+        <p>編撰關於世界的聖經，一度不知道：<span class="redacted">是我在編輯它，還是它在編輯我</span>。</p>
+
+        <p class="log-date">[ LOG: 2025.07.22 ]</p>
+        <p>本網站成立：<span class="redacted">於作者腦中。</span></p>
+      </div>
+    </main>
+  </div>
+</BaseLayout>

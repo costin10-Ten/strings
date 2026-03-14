@@ -1,0 +1,24 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+const base = import.meta.env.BASE_URL;
+---
+<BaseLayout title="404 — 檔案不存在" description="您嘗試存取的卷宗已被列為最高機密或從未存在。">
+  <style>
+    .err-page{padding-top:56px;min-height:100svh;display:flex;align-items:center;justify-content:center;flex-direction:column;text-align:center;gap:24px;padding:120px 24px 60px;}
+    .err-code{font-family:'Share Tech Mono',monospace;font-size:clamp(4rem,15vw,8rem);font-weight:900;color:var(--accent);line-height:1;opacity:.4;}
+    .err-title{font-family:'Noto Serif TC',serif;font-size:clamp(1.4rem,4vw,2rem);font-weight:900;color:var(--text);}
+    .err-desc{font-family:'Share Tech Mono',monospace;font-size:.8rem;color:var(--text-muted);letter-spacing:.1em;line-height:2;}
+    .btn-back{display:inline-flex;align-items:center;gap:8px;background:transparent;color:var(--accent);font-family:'Share Tech Mono',monospace;font-size:.85rem;letter-spacing:.15em;padding:12px 28px;border:1px solid var(--accent);font-weight:700;transition:all .2s;text-transform:uppercase;text-decoration:none;}
+    .btn-back:hover{background:var(--accent);color:var(--bg);}
+  </style>
+  <div class="err-page">
+    <div class="err-code">404</div>
+    <h1 class="err-title">卷宗不存在或已列為最高機密</h1>
+    <p class="err-desc">
+      您嘗試存取的檔案編號已從系統中抹除。<br />
+      這可能是記憶補丁 v2.3 造成的副作用。<br />
+      <span class="redacted">我們一直都在看著你。</span>
+    </p>
+    <a class="btn-back" href={base}>[ 返回大廳 ]</a>
+  </div>
+</BaseLayout>

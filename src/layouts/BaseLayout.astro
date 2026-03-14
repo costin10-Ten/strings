@@ -1,0 +1,388 @@
+---
+interface Props {
+  title: string;
+  description: string;
+  canonicalUrl?: string;
+  ogImage?: string;
+  articleMeta?: {
+    datePublished: string;
+    tags: string[];
+    num: string;
+  };
+}
+const {
+  title,
+  description,
+  canonicalUrl,
+  ogImage = '/og-default.jpg',
+  articleMeta,
+} = Astro.props;
+
+const siteUrl = Astro.site?.toString().replace(/\/$/, '') ?? '';
+const canonical = canonicalUrl ?? siteUrl + Astro.url.pathname;
+const fullTitle = title === '弦音異象' ? title : `${title} — 弦音異象`;
+---
+<!DOCTYPE html>
+<html lang="zh-TW" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#050505" />
+
+  <!-- SEO Primary -->
+  <title>{fullTitle}</title>
+  <meta name="description" content={description} />
+  <link rel="canonical" href={canonical} />
+  <meta name="robots" content="index, follow" />
+  <meta name="author" content="弦音異象" />
+  <meta name="keywords" content="心理驚悚,推理短篇,科幻小說,近未來,台灣創作" />
+
+  <!-- Open Graph -->
+  <meta property="og:type" content={articleMeta ? 'article' : 'website'} />
+  <meta property="og:site_name" content="弦音異象" />
+  <meta property="og:title" content={fullTitle} />
+  <meta property="og:description" content={description} />
+  <meta property="og:url" content={canonical} />
+  <meta property="og:image" content={siteUrl + ogImage} />
+  <meta property="og:locale" content="zh_TW" />
+  {articleMeta && <meta property="article:published_time" content={articleMeta.datePublished} />}
+  {articleMeta?.tags.map(tag => <meta property="article:tag" content={tag} />)}
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content={fullTitle} />
+  <meta name="twitter:description" content={description} />
+  <meta name="twitter:image" content={siteUrl + ogImage} />
+
+  <!-- JSON-LD Structured Data -->
+  {articleMeta ? (
+    <script type="application/ld+json" set:html={JSON.stringify({
+      "@context": "https://schema.org",
+      "@type": "Article",
+      "headline": title,
+      "description": description,
+      "datePublished": articleMeta.datePublished,
+      "author": { "@type": "Organization", "name": "弦音異象" },
+      "publisher": { "@type": "Organization", "name": "弦音異象" },
+      "url": canonical,
+    })} />
+  ) : (
+    <script type="application/ld+json" set:html={JSON.stringify({
+      "@context": "https://schema.org",
+      "@type": "WebSite",
+      "name": "弦音異象",
+      "description": "心理驚悚與推理短篇集",
+      "url": siteUrl,
+    })} />
+  )}
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;700;900&family=Noto+Sans+TC:wght@400;700&family=Share+Tech+Mono&display=swap" />
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;700;900&family=Noto+Sans+TC:wght@400;700&family=Share+Tech+Mono&display=swap" rel="stylesheet" />
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/svg+xml" href={`${import.meta.env.BASE_URL}favicon.svg`} />
+
+  <style is:global>
+    :root{--bg:#050505;--bg2:#0a0a0a;--surface:#0f0f0f;--border:#260000;--accent:#d90429;--accent2:#8d0801;--accent-dim:rgba(217,4,41,0.1);--text:#e0e0e0;--text-dim:#8a8a8a;--text-muted:#4d4d4d;--danger:#ff0000;--warm:#ff5400;--header-bg:rgba(5,5,5,0.98);}
+    [data-theme="clinical"]{--bg:#f4f6f6;--bg2:#eaeded;--surface:#ffffff;--border:#b2babb;--accent:#008c72;--accent2:#005f4e;--accent-dim:rgba(0,140,114,0.1);--text:#1a1c1c;--text-dim:#515a5a;--text-muted:#839192;--danger:#c0392b;--warm:#d35400;--header-bg:rgba(244,246,246,0.98);}
+    [data-theme="biohazard"]{--bg:#eef7f2;--bg2:#e2f0e8;--surface:#ffffff;--border:#b5d5c0;--accent:#15803d;--accent2:#166534;--accent-dim:rgba(21,128,61,0.1);--text:#064e3b;--text-dim:#14532d;--text-muted:#166534;--danger:#b91c1c;--warm:#b45309;--header-bg:rgba(238,247,242,0.98);}
+    [data-theme="fog"]{--bg:#1e2426;--bg2:#262d2f;--surface:#2d3538;--border:#455458;--accent:#5b9ea6;--accent2:#3c6e75;--accent-dim:rgba(91,158,166,0.1);--text:#cfd8d9;--text-dim:#88999b;--text-muted:#5c6b6d;--danger:#e74c3c;--warm:#e67e22;--header-bg:rgba(30,36,38,0.98);}
+    [data-theme="dossier"]{--bg:#e3dac9;--bg2:#d6cdbc;--surface:#ebe3d5;--border:#baa991;--accent:#9c1414;--accent2:#630909;--accent-dim:rgba(156,20,20,0.08);--text:#2b2927;--text-dim:#544f49;--text-muted:#787268;--danger:#c0392b;--warm:#a04000;--header-bg:rgba(227,218,201,0.98);}
+    [data-theme="abyss"]{--bg:#030b14;--bg2:#05111f;--surface:#08182b;--border:#112f4d;--accent:#00b4d8;--accent2:#0077b6;--accent-dim:rgba(0,180,216,0.1);--text:#bce4ec;--text-dim:#6d939e;--text-muted:#3b5c66;--danger:#e63946;--warm:#f4a261;--header-bg:rgba(3,11,20,0.98);}
+    [data-theme="cctv"]{--bg:#020a04;--bg2:#041408;--surface:#061c0c;--border:#10401b;--accent:#00ff41;--accent2:#00b32d;--accent-dim:rgba(0,255,65,0.1);--text:#ccffcc;--text-dim:#66b366;--text-muted:#2d662d;--danger:#ff1a1a;--warm:#ffcc00;--header-bg:rgba(2,10,4,0.98);}
+    [data-theme="noir"]{--bg:#000000;--bg2:#111111;--surface:#1a1a1a;--border:#333333;--accent:#ffea00;--accent2:#cca700;--accent-dim:rgba(255,234,0,0.15);--text:#ffffff;--text-dim:#999999;--text-muted:#555555;--danger:#ffffff;--warm:#ffea00;--header-bg:rgba(0,0,0,0.98);}
+
+    *{margin:0;padding:0;box-sizing:border-box}
+    html{scroll-behavior:smooth;-webkit-text-size-adjust:100%;text-size-adjust:100%;}
+    body{background:var(--bg);color:var(--text);font-family:'Noto Serif TC',serif;font-weight:400;overflow-x:hidden;line-height:1.75;transition:background .2s,color .2s;letter-spacing:0.02em;touch-action:manipulation;}
+    body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:1000;opacity:.4;background-image:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,0.08) 2px,rgba(0,0,0,0.08) 4px);}
+    [data-theme="clinical"] body::before,[data-theme="dossier"] body::before,[data-theme="biohazard"] body::before{opacity:.2;background-image:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,0.04) 2px,rgba(0,0,0,0.04) 4px);}
+
+    .redacted{font-weight:900;color:var(--text);text-decoration:underline;text-decoration-color:var(--accent);text-decoration-thickness:2px;text-underline-offset:4px;}
+    #progress{position:fixed;top:0;left:0;height:3px;background:var(--accent);z-index:9999;width:0%;transition:width .1s linear;pointer-events:none;will-change:width;}
+
+    /* HEADER */
+    header{position:fixed;top:0;left:0;right:0;z-index:200;background:var(--header-bg);border-bottom:1px solid var(--border);padding:0 16px;height:56px;display:flex;align-items:center;gap:10px;box-shadow:0 2px 10px rgba(0,0,0,0.3);}
+    .logo-icon{display:flex;align-items:center;justify-content:center;width:36px;height:36px;cursor:pointer;flex-shrink:0;transition:background .2s;border:1px solid transparent;background:none;}
+    .logo-icon:hover{background:var(--accent-dim);border-color:var(--accent);}
+    .logo-icon svg{width:22px;height:22px;display:block}
+    .logo-text{font-family:'Noto Serif TC',serif;font-size:1.1rem;font-weight:900;color:var(--text);letter-spacing:.1em;background:none;border:none;padding:4px 6px;transition:color .2s;white-space:nowrap;text-transform:uppercase;text-decoration:none;display:inline-flex;align-items:center;}
+    .logo-text em{color:var(--accent);font-style:normal;font-weight:400;}
+    .logo-text:hover{color:var(--accent);}
+    nav.top-nav{display:flex;align-items:center;gap:8px;margin-left:auto;overflow-x:auto;scrollbar-width:none;padding-right:10px;}
+    nav.top-nav::-webkit-scrollbar{display:none}
+    .nav-a{font-family:'Share Tech Mono',monospace;font-size:.65rem;color:var(--text-dim);text-decoration:none;padding:6px 10px;border:1px solid var(--border);transition:all .2s;letter-spacing:.1em;background:var(--surface);white-space:nowrap;text-transform:uppercase;}
+    .nav-a:hover,.nav-a.on{color:var(--bg);border-color:var(--accent);background:var(--accent);}
+    .burger{display:flex;flex-direction:column;justify-content:center;gap:4px;width:36px;height:36px;background:none;border:1px solid var(--border);cursor:pointer;padding:6px;flex-shrink:0;margin-left:6px;}
+    .burger span{display:block;width:100%;height:2px;background:var(--text-dim);}
+
+    /* SIDEBARS */
+    .sidebar-overlay{position:fixed;inset:0;background:rgba(0,0,0,.8);z-index:190;opacity:0;pointer-events:none;transition:opacity .2s;}
+    .sidebar-overlay.open{opacity:1;pointer-events:auto}
+    .sidebar{position:fixed;top:0;bottom:0;width:min(340px,85vw);z-index:191;background:var(--bg2);display:flex;flex-direction:column;padding:0;overflow-y:auto;transition:transform .3s cubic-bezier(.16,1,.3,1);box-shadow:0 0 20px rgba(0,0,0,0.8);}
+    .sidebar.left{left:0;border-right:1px solid var(--accent);transform:translateX(-100%);}
+    .sidebar.left.open{transform:translateX(0)}
+    .sidebar.right{right:0;border-left:1px solid var(--accent);transform:translateX(100%);}
+    .sidebar.right.open{transform:translateX(0)}
+    .sb-head{height:56px;display:flex;align-items:center;padding:0 20px;border-bottom:1px solid var(--border);gap:10px;flex-shrink:0;justify-content:space-between;background:var(--surface);}
+    .sb-drag{display:flex;align-items:center;justify-content:center;height:28px;flex-shrink:0;cursor:pointer;opacity:0.4;}
+    .sb-drag::before{content:'';display:block;width:36px;height:4px;border-radius:2px;background:var(--text-dim);}
+    .sb-logo-text{font-family:'Share Tech Mono',monospace;font-size:1rem;font-weight:700;color:var(--text);letter-spacing:0.1em;}
+    .sb-logo-text em{color:var(--accent);font-style:normal}
+    .sb-close{background:none;border:none;color:var(--text-muted);font-size:1.2rem;cursor:pointer;padding:4px 8px;font-family:monospace;}
+    .sb-close:hover{color:var(--danger)}
+    .sb-body{padding:20px;flex:1;display:flex;flex-direction:column;}
+    .sb-section{font-family:'Share Tech Mono',monospace;font-size:.65rem;color:var(--text-dim);letter-spacing:.2em;text-transform:uppercase;padding:6px 0 10px;border-bottom:1px solid var(--border);margin-bottom:12px;font-weight:700;}
+    .sb-section::before{content:'[ ';color:var(--accent);}.sb-section::after{content:' ]';color:var(--accent);}
+    .sb-link{display:flex;align-items:center;gap:10px;font-family:'Noto Serif TC',serif;font-size:.95rem;font-weight:700;color:var(--text);text-decoration:none;padding:12px 10px;border-bottom:1px solid var(--border);cursor:pointer;background:none;border-left:2px solid transparent;border-right:none;border-top:none;width:100%;text-align:left;transition:all .2s}
+    .sb-link:hover{color:var(--bg);background:var(--accent);border-left-color:var(--text);padding-left:16px;}
+    .sb-stat-box{background:var(--surface);border:1px solid var(--border);padding:12px 16px;margin-bottom:8px;display:flex;justify-content:space-between;align-items:center;border-left:3px solid var(--text-dim);}
+    .sb-stat-lbl{font-family:'Share Tech Mono',monospace;font-size:.7rem;color:var(--text-muted);text-transform:uppercase;}
+    .sb-stat-val{font-family:'Share Tech Mono',monospace;font-size:1.2rem;color:var(--accent);font-weight:700;}
+    .sb-theme-grid{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:8px;margin-top:10px}
+    .sb-theme-btn{display:flex;flex-direction:column;align-items:center;gap:6px;background:var(--surface);border:1px solid var(--border);padding:10px 4px;cursor:pointer;border-radius:0;}
+    .sb-theme-btn:hover,.sb-theme-btn.on{border-color:var(--accent);background:var(--accent-dim);}
+    .sb-dot{width:16px;height:16px;border-radius:0;transform:rotate(45deg);}
+    .sb-dot.dark{background:linear-gradient(135deg,#050505 50%,#d90429)}.sb-dot.clinical{background:linear-gradient(135deg,#f4f6f6 50%,#008c72)}
+    .sb-dot.biohazard{background:linear-gradient(135deg,#eef7f2 50%,#15803d)}.sb-dot.fog{background:linear-gradient(135deg,#1e2426 50%,#5b9ea6)}
+    .sb-dot.dossier{background:linear-gradient(135deg,#e3dac9 50%,#9c1414)}.sb-dot.abyss{background:linear-gradient(135deg,#030b14 50%,#00b4d8)}
+    .sb-dot.cctv{background:linear-gradient(135deg,#020a04 50%,#00ff41)}.sb-dot.noir{background:linear-gradient(135deg,#000000 50%,#ffea00)}
+    .sb-theme-name{font-family:'Share Tech Mono',monospace;font-size:.55rem;color:var(--text-muted);letter-spacing:.05em;text-transform:uppercase;}
+    .rsb-list{display:flex;flex-direction:column;gap:6px;}
+    .rsb-item{display:block;padding:12px 14px;background:var(--surface);border:1px solid var(--border);transition:all .2s;border-left:2px solid transparent;text-decoration:none;}
+    .rsb-item:hover{border-left-color:var(--accent);background:var(--bg);transform:translateX(4px);}
+    .rsb-title{font-family:'Noto Serif TC',serif;font-size:.85rem;font-weight:700;color:var(--text);margin-bottom:4px;line-height:1.4;}
+    .rsb-tags{font-family:'Share Tech Mono',monospace;font-size:.6rem;color:var(--text-muted);letter-spacing:.05em;}
+
+    /* FOOTER */
+    footer{border-top:1px solid var(--border);padding:40px 24px;text-align:center;background:var(--bg2);}
+    .ft-logo{font-family:'Share Tech Mono',monospace;font-size:1.2rem;font-weight:700;color:var(--text);margin-bottom:8px;letter-spacing:0.2em;}
+    .ft-logo em{color:var(--accent);font-style:normal}
+    .ft-txt{font-family:'Share Tech Mono',monospace;font-size:.65rem;color:var(--text-muted);letter-spacing:.1em;line-height:2}
+    .ft-txt a{color:var(--text-muted);transition:color .2s;}.ft-txt a:hover{color:var(--accent);}
+
+    /* TAGS */
+    .tag{font-family:'Share Tech Mono',monospace;font-size:.6rem;color:var(--bg);letter-spacing:.1em;padding:3px 8px;background:var(--text-dim);text-transform:uppercase;}
+    .tag.w{background:var(--accent);color:var(--bg);}
+    .tag.d{background:var(--danger);color:var(--text);}
+
+    /* ARTICLE BODY */
+    .art-body{font-family:'Noto Serif TC',serif;line-height:2.1;color:var(--text);font-weight:400;font-size:1.05rem;}
+    .art-body p{margin-bottom:1.8em;text-align:justify;}
+    .art-body .s-break{text-align:center;color:var(--border);font-family:'Share Tech Mono',monospace;font-size:1rem;letter-spacing:.5em;margin:3em 0;}
+    .art-body blockquote,.art-body .callout{border-left:4px solid var(--accent);margin:2.5em 0;font-style:italic;font-weight:700;color:var(--text);background:var(--surface);padding:16px 24px;}
+    [data-theme="dark"] .art-body blockquote,[data-theme="noir"] .art-body blockquote{color:#e0e0e0;}
+    [data-theme="clinical"] .art-body blockquote,[data-theme="dossier"] .art-body blockquote,[data-theme="biohazard"] .art-body blockquote{color:#111111;}
+    .art-body blockquote p{margin-bottom:0;}
+    .art-img{margin:3em 0;overflow:hidden;border:1px solid var(--border);padding:4px;background:var(--surface);}
+    .art-img img{width:100%;display:block;}
+    .art-img figcaption{font-family:'Share Tech Mono',monospace;font-size:.65rem;color:var(--text-muted);letter-spacing:.1em;padding:10px 0;text-align:center;text-transform:uppercase;background:var(--bg2);border-top:1px solid var(--border);}
+
+    @media(max-width:680px){
+      .art-wrap{padding:30px 16px 60px;}
+    }
+  </style>
+
+  <!-- Inline theme init to prevent FOUC -->
+  <script is:inline>
+    (function(){
+      try{
+        var t=localStorage.getItem('theme');
+        if(t&&['dark','clinical','biohazard','fog','dossier','abyss','cctv','noir'].includes(t)){
+          document.documentElement.setAttribute('data-theme',t);
+        }
+      }catch(e){}
+    })();
+  </script>
+</head>
+<body>
+  <div id="progress" aria-hidden="true"></div>
+
+  <!-- Left Sidebar -->
+  <div class="sidebar-overlay" id="sbOverlay"></div>
+  <aside class="sidebar left" id="leftSidebar" aria-label="檔案庫導覽">
+    <div class="sb-drag" id="sbLeftDrag" role="button" aria-label="關閉導覽"></div>
+    <div class="sb-head">
+      <span class="sb-logo-text">檔案庫<em>導覽</em></span>
+      <button class="sb-close" id="sbLeftClose" aria-label="關閉">[X]</button>
+    </div>
+    <div class="sb-body">
+      <div class="sb-section">主目錄</div>
+      <a class="sb-link" href={`${import.meta.env.BASE_URL}#stories`}>> 最新文章</a>
+      <a class="sb-link" href={`${import.meta.env.BASE_URL}#world`}>> 犯罪類別篩選</a>
+      <a class="sb-link" href={`${import.meta.env.BASE_URL}about`}>> 關於作者</a>
+      <a class="sb-link" href={`${import.meta.env.BASE_URL}author`}>> <span class="redacted">[作者日誌]</span></a>
+      <div class="sb-section" style="margin-top:32px">色彩濾鏡</div>
+      <div class="sb-theme-grid" id="themeGrid"></div>
+    </div>
+  </aside>
+
+  <!-- Right Sidebar -->
+  <aside class="sidebar right" id="rightSidebar" aria-label="最新卷宗">
+    <div class="sb-drag" id="sbRightDrag" role="button" aria-label="關閉導覽"></div>
+    <div class="sb-head">
+      <span class="sb-logo-text">最新<em>卷宗</em></span>
+      <button class="sb-close" id="sbRightClose" aria-label="關閉">[X]</button>
+    </div>
+    <div class="sb-body">
+      <div class="sb-section">近期異常</div>
+      <div class="rsb-list" id="rightArtList"></div>
+    </div>
+  </aside>
+
+  <!-- Header -->
+  <header>
+    <button class="logo-icon" id="btnLeftSb" aria-label="開啟檔案庫導覽">
+      <svg viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg" stroke="var(--text)" stroke-width="1.4" stroke-linejoin="round" stroke-linecap="round" aria-hidden="true">
+        <polygon points="14,2.5 20,6.5 20,13.5 14,17.5 8,13.5 8,6.5" fill="none"/>
+        <polygon points="14,10.5 17.5,12.5 17.5,17 14,19 10.5,17 10.5,12.5" fill="none"/>
+        <line x1="14" y1="2.5" x2="14" y2="10.5"/><line x1="20" y1="6.5" x2="17.5" y2="12.5"/>
+        <line x1="20" y1="13.5" x2="17.5" y2="17"/><line x1="14" y1="17.5" x2="14" y2="19"/>
+        <line x1="8" y1="13.5" x2="10.5" y2="17"/><line x1="8" y1="6.5" x2="10.5" y2="12.5"/>
+        <line x1="14" y1="19" x2="14" y2="25.5"/><line x1="17.5" y1="17" x2="20.5" y2="21.5"/>
+        <line x1="10.5" y1="17" x2="7.5" y2="21.5"/><line x1="14" y1="25.5" x2="20.5" y2="21.5"/>
+        <line x1="14" y1="25.5" x2="7.5" y2="21.5"/>
+      </svg>
+    </button>
+    <a class="logo-text" href={`${import.meta.env.BASE_URL}`}>弦音<em>異象</em></a>
+    <nav class="top-nav" aria-label="類別導覽">
+      <a class="nav-a" href={`${import.meta.env.BASE_URL}?cat=記憶科技`}>精神汙染</a>
+      <a class="nav-a" href={`${import.meta.env.BASE_URL}?cat=地下城市`}>深淵建築</a>
+      <a class="nav-a" href={`${import.meta.env.BASE_URL}?cat=AI社會`}>人工意識</a>
+      <a class="nav-a" href={`${import.meta.env.BASE_URL}?cat=生態復育`}>異變生態</a>
+    </nav>
+    <button class="burger" id="btnRightSb" aria-label="開啟最新卷宗">
+      <span></span><span></span><span></span>
+    </button>
+  </header>
+
+  <!-- Main content slot -->
+  <slot />
+
+  <!-- Footer -->
+  <footer>
+    <div class="ft-logo">弦音<em>異象</em></div>
+    <div class="ft-txt">
+      ANOMALY ARCHIVES · CLASSIFIED<br />
+      一切皆為虛構，除非你相信。<br /><br />
+      <a href={`${import.meta.env.BASE_URL}about`}>世界設定</a>
+      {' · '}
+      <a href={`${import.meta.env.BASE_URL}author`}>作者日誌</a>
+    </div>
+  </footer>
+
+  <script>
+    // ─── Reading Progress Bar ───────────────────────────────
+    const prog = document.getElementById('progress') as HTMLDivElement;
+    function updateProgress() {
+      const s = document.documentElement;
+      const scrolled = s.scrollTop / (s.scrollHeight - s.clientHeight);
+      prog.style.width = Math.min(scrolled * 100, 100) + '%';
+    }
+    document.addEventListener('scroll', updateProgress, { passive: true });
+
+    // ─── Sidebar Logic ──────────────────────────────────────
+    let _lockCount = 0;
+    function lockScroll() { _lockCount++; document.body.style.overflow = 'hidden'; }
+    function unlockScroll() { _lockCount = Math.max(0, _lockCount - 1); if (!_lockCount) document.body.style.overflow = ''; }
+
+    const overlay = document.getElementById('sbOverlay')!;
+    const leftSb = document.getElementById('leftSidebar')!;
+    const rightSb = document.getElementById('rightSidebar')!;
+
+    function openLeft() { leftSb.classList.add('open'); overlay.classList.add('open'); lockScroll(); }
+    function closeLeft() { leftSb.classList.remove('open'); checkOverlay(); }
+    function openRight() { rightSb.classList.add('open'); overlay.classList.add('open'); lockScroll(); populateRightSidebar(); }
+    function closeRight() { rightSb.classList.remove('open'); checkOverlay(); }
+    function checkOverlay() { if (!leftSb.classList.contains('open') && !rightSb.classList.contains('open')) { overlay.classList.remove('open'); unlockScroll(); } }
+
+    document.getElementById('btnLeftSb')!.addEventListener('click', openLeft);
+    document.getElementById('btnRightSb')!.addEventListener('click', openRight);
+    document.getElementById('sbLeftClose')!.addEventListener('click', closeLeft);
+    document.getElementById('sbRightClose')!.addEventListener('click', closeRight);
+    document.getElementById('sbLeftDrag')!.addEventListener('click', closeLeft);
+    document.getElementById('sbRightDrag')!.addEventListener('click', closeRight);
+    overlay.addEventListener('click', () => { closeLeft(); closeRight(); });
+
+    // Swipe-to-close
+    function addSwipe(el: HTMLElement, closeFn: () => void, dir: number) {
+      let tx: number | null = null;
+      el.addEventListener('touchstart', e => { tx = e.touches[0].clientX; }, { passive: true });
+      el.addEventListener('touchend', e => {
+        if (tx === null) return;
+        const dx = e.changedTouches[0].clientX - tx;
+        if (Math.abs(dx) > 60 && Math.sign(dx) === dir) closeFn();
+        tx = null;
+      }, { passive: true });
+    }
+    addSwipe(leftSb, closeLeft, -1);
+    addSwipe(rightSb, closeRight, 1);
+
+    // ESC key
+    document.addEventListener('keydown', e => {
+      if (e.key === 'Escape') {
+        if (leftSb.classList.contains('open')) closeLeft();
+        else if (rightSb.classList.contains('open')) closeRight();
+      }
+    });
+
+    // ─── Theme ──────────────────────────────────────────────
+    const THEMES = ['dark','clinical','biohazard','fog','dossier','abyss','cctv','noir'];
+    const THEME_LABELS: Record<string, string> = { dark:'暗黑',clinical:'臨床',biohazard:'生危',fog:'迷霧',dossier:'卷宗',abyss:'深淵',cctv:'監控',noir:'黑白' };
+
+    function setTheme(t: string) {
+      document.documentElement.setAttribute('data-theme', t);
+      try { localStorage.setItem('theme', t); } catch {}
+      document.querySelectorAll('.sb-theme-btn').forEach(b => b.classList.toggle('on', (b as HTMLElement).dataset.theme === t));
+    }
+
+    // Build theme grid
+    const grid = document.getElementById('themeGrid')!;
+    THEMES.forEach(t => {
+      const btn = document.createElement('button');
+      btn.className = 'sb-theme-btn';
+      btn.dataset.theme = t;
+      const dot = document.createElement('div');
+      dot.className = `sb-dot ${t}`;
+      const name = document.createElement('span');
+      name.className = 'sb-theme-name';
+      name.textContent = THEME_LABELS[t];
+      btn.append(dot, name);
+      btn.addEventListener('click', () => setTheme(t));
+      grid.appendChild(btn);
+    });
+
+    // Restore active state
+    const curTheme = document.documentElement.getAttribute('data-theme') || 'dark';
+    document.querySelectorAll('.sb-theme-btn').forEach(b => b.classList.toggle('on', (b as HTMLElement).dataset.theme === curTheme));
+
+    // ─── Right Sidebar Articles ──────────────────────────────
+    async function populateRightSidebar() {
+      const list = document.getElementById('rightArtList')!;
+      if (list.children.length > 0) return; // already populated
+      // Articles are embedded as a data attribute by the page
+      const data = document.getElementById('articlesData');
+      if (!data) return;
+      try {
+        const arts = JSON.parse(data.textContent || '[]');
+        arts.slice(0, 5).forEach((a: { title: string; tags: string[]; slug: string }) => {
+          const item = document.createElement('a');
+          item.className = 'rsb-item';
+          item.href = (document.documentElement.dataset.base || '') + 'articles/' + a.slug;
+          const title = document.createElement('div');
+          title.className = 'rsb-title';
+          title.textContent = a.title;
+          const tags = document.createElement('div');
+          tags.className = 'rsb-tags';
+          tags.textContent = a.tags.join(', ');
+          item.append(title, tags);
+          list.appendChild(item);
+        });
+      } catch {}
+    }
+  </script>
+</body>
+</html>

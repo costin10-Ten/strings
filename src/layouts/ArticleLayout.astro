@@ -1,0 +1,174 @@
+---
+import BaseLayout from './BaseLayout.astro';
+import type { CollectionEntry } from 'astro:content';
+
+interface Props {
+  article: CollectionEntry<'articles'>;
+  prevArticle?: CollectionEntry<'articles'> | null;
+  nextArticle?: CollectionEntry<'articles'> | null;
+}
+
+const { article, prevArticle, nextArticle } = Astro.props;
+const { title, num, date, readTime, tags, excerpt } = article.data;
+const base = import.meta.env.BASE_URL;
+---
+<BaseLayout
+  title={title}
+  description={excerpt}
+  canonicalUrl={Astro.site?.toString().replace(/\/$/, '') + Astro.url.pathname}
+  articleMeta={{ datePublished: date, tags: tags.map(t => t.name), num }}
+>
+  <!-- Article data for right sidebar -->
+  <script id="articlesData" type="application/json" set:html={JSON.stringify([])} />
+  <div data-base={base} id="baseRef" style="display:none"></div>
+
+  <style>
+    .rdr-hd{flex-shrink:0;background:var(--header-bg);border-bottom:1px solid var(--border);padding:0 16px;height:56px;display:flex;align-items:center;gap:12px;position:sticky;top:56px;z-index:150;}
+    .btn-back{display:flex;align-items:center;gap:6px;font-family:'Share Tech Mono',monospace;font-size:.75rem;color:var(--text);background:none;border:1px solid var(--border);cursor:pointer;padding:6px 12px;transition:all .2s;white-space:nowrap;text-transform:uppercase;text-decoration:none;}
+    .btn-back:hover{background:var(--text);color:var(--bg);}
+    .rdr-ttl{font-family:'Share Tech Mono',monospace;font-size:.8rem;color:var(--text-muted);flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;text-align:center;letter-spacing:0.1em;}
+    .ctrl-btn{display:flex;align-items:center;justify-content:center;gap:4px;height:36px;padding:0 10px;background:none;border:1px solid var(--border);color:var(--text-dim);cursor:pointer;font-family:'Share Tech Mono',monospace;font-size:.9rem;transition:color .2s;}
+    .ctrl-btn:hover{border-color:var(--accent);color:var(--accent);}
+    .ctrl-lbl{font-size:.58rem;letter-spacing:.08em;text-transform:uppercase;}
+
+    .art-page{padding-top:56px;min-height:100svh;}
+    .rdr-bg-wrap{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden;opacity:0.06;top:112px;}
+    .rdr-bg{width:100%;height:100%;background-image:url('https://images.unsplash.com/photo-1509316785289-025f5b846b35?q=60&w=800&fm=webp');background-size:cover;background-position:center top;}
+
+    .art-wrap{max-width:720px;margin:0 auto;padding:50px 24px 100px;position:relative;z-index:1;background:var(--bg);box-shadow:0 0 40px rgba(0,0,0,0.5);min-height:calc(100svh - 112px);}
+    .art-tags{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:24px;}
+    .art-wrap h1{font-family:'Noto Serif TC',serif;font-size:clamp(1.8rem,6vw,2.8rem);font-weight:900;line-height:1.25;color:var(--text);margin-bottom:24px;letter-spacing:0.02em;}
+    .art-byline{display:flex;gap:16px;align-items:center;flex-wrap:wrap;border-top:2px solid var(--text);border-bottom:1px solid var(--border);margin-bottom:40px;background:var(--surface);padding:12px 16px;}
+    .byl-item{font-family:'Share Tech Mono',monospace;font-size:.7rem;color:var(--text-dim);letter-spacing:.1em;text-transform:uppercase;}
+    .byl-item em{color:var(--text);font-style:normal;font-weight:bold;}
+
+    .art-nav{background:var(--header-bg);border-top:1px solid var(--border);padding:16px 24px;display:flex;align-items:center;justify-content:space-between;gap:12px;position:sticky;bottom:0;z-index:100;padding-bottom:max(16px,env(safe-area-inset-bottom));}
+    .nav-pp{display:flex;align-items:center;gap:8px;font-family:'Share Tech Mono',monospace;font-size:.7rem;letter-spacing:.1em;background:transparent;border:1px solid var(--border);color:var(--text-dim);padding:10px 16px;text-decoration:none;transition:all .2s;white-space:nowrap;text-transform:uppercase;flex:1;justify-content:center;}
+    .nav-pp:hover{border-color:var(--text);color:var(--bg);background:var(--text);}
+    .nav-pp.disabled{opacity:.2;pointer-events:none;}
+
+    /* Font controls */
+    .font-sz-fab{position:fixed;bottom:80px;right:16px;z-index:160;display:flex;flex-direction:column;align-items:center;gap:6px;opacity:0.5;transition:opacity 0.3s;}
+    .font-sz-fab:hover{opacity:1;}
+    .fsz-pill{display:flex;flex-direction:column;align-items:center;gap:0;background:var(--surface);border:1px solid var(--border);padding:0;box-shadow:0 4px 15px rgba(0,0,0,.6);}
+    .fsz-btn{width:40px;height:36px;display:flex;align-items:center;justify-content:center;background:none;border:none;color:var(--text-dim);cursor:pointer;font-family:'Share Tech Mono',monospace;}
+    .fsz-btn.big{font-size:.9rem;font-weight:700}.fsz-btn.sml{font-size:.7rem}
+    .fsz-btn:hover{color:var(--text);background:var(--bg2);}
+    .fsz-lbl{font-family:'Share Tech Mono',monospace;font-size:.6rem;color:var(--text-muted);letter-spacing:.1em;padding:6px 0;cursor:pointer;border-top:1px solid var(--border);border-bottom:1px solid var(--border);width:100%;text-align:center;}
+    .font-type-fab{position:fixed;bottom:80px;left:16px;z-index:160;display:flex;flex-direction:column;align-items:center;opacity:0.5;transition:opacity 0.3s;}
+    .font-type-fab:hover{opacity:1;}
+    .ft-pill{display:flex;flex-direction:column;align-items:stretch;background:var(--surface);border:1px solid var(--border);box-shadow:0 4px 15px rgba(0,0,0,.6);}
+    .ft-opt{display:flex;align-items:center;justify-content:center;gap:6px;padding:12px 14px;background:none;border:none;cursor:pointer;font-size:.75rem;color:var(--text-dim);transition:all .2s;white-space:nowrap;}
+    .ft-opt:hover,.ft-opt.on{color:var(--text);background:var(--bg2);}
+    .ft-opt+.ft-opt{border-top:1px solid var(--border);}
+    .ft-opt-serif{font-family:'Noto Serif TC',serif;font-weight:900;}
+    .ft-opt-sans{font-family:'Noto Sans TC',sans-serif;font-weight:700;}
+
+    @media(max-width:680px){
+      .art-nav{padding:8px;gap:4px;padding-bottom:max(8px,env(safe-area-inset-bottom));}
+      .nav-pp{padding:8px 4px;font-size:.6rem;}
+    }
+  </style>
+
+  <div class="art-page">
+    <div class="rdr-hd">
+      <a class="btn-back" href={`${base}`}>[ 返回大廳 ]</a>
+      <div class="rdr-ttl">{title}</div>
+      <button class="ctrl-btn" id="themeBtn" title="切換色彩配置">
+        👁<span class="ctrl-lbl">濾鏡</span>
+      </button>
+    </div>
+
+    <div class="rdr-bg-wrap" aria-hidden="true"><div class="rdr-bg"></div></div>
+
+    <main class="art-wrap" id="artWrap">
+      <div class="art-tags">
+        {tags.map(t => <span class={`tag ${t.cls}`}>{t.name}</span>)}
+      </div>
+      <h1>{title}</h1>
+      <div class="art-byline">
+        <div class="byl-item">案件編號 <em>{num}</em></div>
+        <div class="byl-item">案發時間 <em>{date}</em></div>
+        <div class="byl-item">預估閱讀 <em>{readTime}</em></div>
+      </div>
+      <div class="art-body">
+        <slot />
+      </div>
+    </main>
+
+    <nav class="art-nav" aria-label="文章導覽">
+      {prevArticle
+        ? <a class="nav-pp" href={`${base}articles/${prevArticle.slug}`}>[ 上一卷宗 ]</a>
+        : <span class="nav-pp disabled">[ 上一卷宗 ]</span>
+      }
+      {nextArticle
+        ? <a class="nav-pp" href={`${base}articles/${nextArticle.slug}`}>[ 下一卷宗 ]</a>
+        : <span class="nav-pp disabled">[ 下一卷宗 ]</span>
+      }
+    </nav>
+  </div>
+
+  <!-- Font size FAB -->
+  <div class="font-sz-fab" id="fontSzFab">
+    <div class="fsz-pill">
+      <button class="fsz-btn big" id="btnFontUp" aria-label="放大字體">+A</button>
+      <div class="fsz-lbl" id="fontLabel" role="button" aria-label="重設字體">1.0×</div>
+      <button class="fsz-btn sml" id="btnFontDown" aria-label="縮小字體">-A</button>
+    </div>
+  </div>
+
+  <!-- Font type FAB -->
+  <div class="font-type-fab" id="fontTypeFab">
+    <div class="ft-pill">
+      <button class="ft-opt on" id="ftSerif" aria-label="明體"><span class="ft-opt-serif">明</span></button>
+      <button class="ft-opt" id="ftSans" aria-label="黑體"><span class="ft-opt-sans">黑</span></button>
+    </div>
+  </div>
+
+  <script>
+    // Theme cycle
+    const THEMES = ['dark','clinical','biohazard','fog','dossier','abyss','cctv','noir'];
+    document.getElementById('themeBtn')!.addEventListener('click', () => {
+      const cur = document.documentElement.getAttribute('data-theme') || 'dark';
+      const next = THEMES[(THEMES.indexOf(cur) + 1) % THEMES.length];
+      document.documentElement.setAttribute('data-theme', next);
+      try { localStorage.setItem('theme', next); } catch {}
+    });
+
+    // Font size
+    let fontSz = 1.0;
+    const body = document.getElementById('artWrap')!;
+    const lbl = document.getElementById('fontLabel')!;
+    function applyFont() {
+      body.style.fontSize = fontSz + 'rem';
+      lbl.textContent = fontSz.toFixed(1) + '×';
+    }
+    document.getElementById('btnFontUp')!.addEventListener('click', () => { fontSz = Math.min(1.6, +(fontSz + 0.1).toFixed(1)); applyFont(); });
+    document.getElementById('btnFontDown')!.addEventListener('click', () => { fontSz = Math.max(0.8, +(fontSz - 0.1).toFixed(1)); applyFont(); });
+    lbl.addEventListener('click', () => { fontSz = 1.0; applyFont(); });
+
+    // Font type
+    document.getElementById('ftSerif')!.addEventListener('click', () => {
+      document.getElementById('artWrap')!.style.fontFamily = "'Noto Serif TC', serif";
+      document.getElementById('ftSerif')!.classList.add('on');
+      document.getElementById('ftSans')!.classList.remove('on');
+    });
+    document.getElementById('ftSans')!.addEventListener('click', () => {
+      document.getElementById('artWrap')!.style.fontFamily = "'Noto Sans TC', sans-serif";
+      document.getElementById('ftSans')!.classList.add('on');
+      document.getElementById('ftSerif')!.classList.remove('on');
+    });
+
+    // Lazy image reveal
+    const imgs = document.querySelectorAll('.art-img');
+    const obs = new IntersectionObserver(entries => {
+      entries.forEach(e => { if (e.isIntersecting) { (e.target as HTMLElement).style.opacity = '1'; (e.target as HTMLElement).style.transform = 'translateY(0)'; } });
+    }, { threshold: 0.1 });
+    imgs.forEach(img => {
+      (img as HTMLElement).style.opacity = '0';
+      (img as HTMLElement).style.transform = 'translateY(20px)';
+      (img as HTMLElement).style.transition = 'opacity .6s ease, transform .6s ease';
+      obs.observe(img);
+    });
+  </script>
+</BaseLayout>

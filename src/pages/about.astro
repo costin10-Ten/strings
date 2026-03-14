@@ -1,0 +1,81 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+const base = import.meta.env.BASE_URL;
+---
+<BaseLayout
+  title="世界設定"
+  description="弦音異象的世界觀設定——觀測 2040 年代科技反噬、記憶操控與深淵建築的紀錄庫。"
+>
+  <style>
+    .about-page{padding-top:56px;min-height:100svh;}
+    .about-hd{position:sticky;top:56px;z-index:150;background:var(--header-bg);border-bottom:1px solid var(--border);padding:0 20px;height:56px;display:flex;align-items:center;gap:12px;}
+    .btn-back{display:flex;align-items:center;gap:6px;font-family:'Share Tech Mono',monospace;font-size:.75rem;color:var(--text);background:none;border:1px solid var(--border);cursor:pointer;padding:6px 12px;transition:all .2s;white-space:nowrap;text-transform:uppercase;text-decoration:none;}
+    .btn-back:hover{background:var(--text);color:var(--bg);}
+    .rdr-ttl{font-family:'Share Tech Mono',monospace;font-size:.8rem;color:var(--text-muted);flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;text-align:center;letter-spacing:0.1em;}
+    .about-content{max-width:720px;margin:0 auto;padding:60px 24px 100px;}
+    .about-intro{margin-bottom:80px;border-left:4px solid var(--accent);padding-left:24px;}
+    .about-intro h1{font-family:'Noto Serif TC',serif;font-size:clamp(1.8rem,5vw,2.8rem);font-weight:900;line-height:1.2;margin-bottom:24px;color:var(--text);}
+    .about-intro p{font-size:.95rem;color:var(--text-dim);line-height:2;margin-bottom:1.2em;}
+    .hl{color:var(--accent);font-style:normal;font-family:'Share Tech Mono',monospace;}
+    .tl-head{font-family:'Share Tech Mono',monospace;font-size:.8rem;color:var(--text);letter-spacing:.2em;text-transform:uppercase;margin-bottom:40px;font-weight:bold;}
+    .tl-head::before{content:'[ ';color:var(--accent);}.tl-head::after{content:' ]';color:var(--accent);}
+    .timeline{position:relative;padding-left:32px;}.timeline::before{content:'';position:absolute;left:0;top:8px;bottom:8px;width:2px;background:var(--border);}
+    .tl-item{position:relative;padding-bottom:48px;}
+    .tl-dot{position:absolute;left:-37px;top:4px;width:12px;height:12px;border:2px solid var(--text-dim);background:var(--bg);transform:rotate(45deg);}
+    .tl-item:hover .tl-dot,.tl-item.ms .tl-dot{border-color:var(--accent);background:var(--accent);}
+    .tl-item.ms .tl-dot{width:16px;height:16px;left:-39px;top:2px;}
+    .tl-year{font-family:'Share Tech Mono',monospace;font-size:.7rem;color:var(--accent);letter-spacing:.15em;margin-bottom:8px;font-weight:bold;}
+    .tl-title{font-family:'Noto Serif TC',serif;font-size:1.1rem;font-weight:900;color:var(--text);margin-bottom:10px;line-height:1.4;}
+    .tl-item.ms .tl-title{font-size:1.3rem;}
+    .tl-desc{font-size:.85rem;color:var(--text-dim);line-height:1.9;}
+    .tl-badge{display:inline-block;font-family:'Share Tech Mono',monospace;font-size:.6rem;color:var(--bg);background:var(--text-dim);padding:3px 8px;letter-spacing:.1em;margin-left:12px;vertical-align:middle;text-transform:uppercase;}
+  </style>
+
+  <div class="about-page">
+    <div class="about-hd">
+      <a class="btn-back" href={base}>[ 離開 ]</a>
+      <div class="rdr-ttl">世界設定</div>
+    </div>
+    <main class="about-content">
+      <div class="about-intro">
+        <h1>深淵的凝視，<br /><em class="hl">從未停止</em></h1>
+        <p>「弦音異象」收集了現代/近未來人心的各種異象。觀測 2040 年生活周遭發生的所有相變、深邃、與科技反噬相關的短篇紀錄。</p>
+        <p>請記住：你在這裡看到的所有文字，都可能帶有<span class="redacted">不寒而慄的既視感</span>。當你自以為在閱讀別人的悲劇時，弦音也正在反向解析你的心理弱點。</p>
+      </div>
+
+      <div class="tl-head" aria-label="弦音發展史">弦音發展史</div>
+      <div class="timeline">
+        <div class="tl-item ms">
+          <div class="tl-dot" aria-hidden="true"></div>
+          <div class="tl-year">2045.03</div>
+          <div class="tl-title">第 17 次循環啟動 <span class="tl-badge">現在</span></div>
+          <div class="tl-desc">模擬箱內部的穩定度持續下降。記憶補丁 v2.3 強制覆寫事件引發實驗體的集體覺醒反應。</div>
+        </div>
+        <div class="tl-item">
+          <div class="tl-dot" aria-hidden="true"></div>
+          <div class="tl-year">2044.11</div>
+          <div class="tl-title">地下城市第十七層封層令</div>
+          <div class="tl-desc">「藍色」詞彙被正式列為 A 級禁語，傳播者強制送往神經矯正局。</div>
+        </div>
+        <div class="tl-item">
+          <div class="tl-dot" aria-hidden="true"></div>
+          <div class="tl-year">2044.06</div>
+          <div class="tl-title">第五代欺騙模型通過政府審核</div>
+          <div class="tl-desc">情感劫持技術正式列裝，首批部署於資訊局審訊部門。三名測試員失蹤。</div>
+        </div>
+        <div class="tl-item ms">
+          <div class="tl-dot" aria-hidden="true"></div>
+          <div class="tl-year">2045.03.13</div>
+          <div class="tl-title">最後一棵野生橡樹移交基因保存局</div>
+          <div class="tl-desc">人類正式宣告 100% 數位植被管理時代。目擊者記述：「有人在哭，但說不清楚為什麼。」</div>
+        </div>
+        <div class="tl-item">
+          <div class="tl-dot" aria-hidden="true"></div>
+          <div class="tl-year">2040.01</div>
+          <div class="tl-title">神經介面正式商用化 <span class="tl-badge">里程碑</span></div>
+          <div class="tl-desc">記憶補丁服務開放大眾訂閱。初版服務條款第四十七條以淡灰色字體隱藏強制授權條款。</div>
+        </div>
+      </div>
+    </main>
+  </div>
+</BaseLayout>
