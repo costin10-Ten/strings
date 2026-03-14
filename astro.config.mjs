@@ -1,16 +1,12 @@
 import { defineConfig } from 'astro/config';
 import sitemap from '@astrojs/sitemap';
 
-// ★ 部署前請修改 site 與 base：
-//   - 個人根網域 (username.github.io)：site='https://username.github.io', base='/'
-//   - 專案子目錄 (username.github.io/repo)：site='https://username.github.io', base='/repo'
 export default defineConfig({
+  // 1. 這裡一定要填你的 GitHub 網址，結尾不要有斜線
   site: 'https://costin10-Ten.github.io',
-  base: 'strings',
+  
+  // 2. 這裡填你的 Repository 名字，前後都要有斜線
+  base: '/strings/', 
+  
   integrations: [sitemap()],
-  output: 'static',
-  build: {
-    assets: '_assets',
-  },
-  compressHTML: true,
 });
