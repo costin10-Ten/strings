@@ -6,7 +6,7 @@ import sitemap from '@astrojs/sitemap';
 //   - 專案子目錄 (username.github.io/repo)：site='https://username.github.io', base='/repo'
 export default defineConfig({
   site: 'https://costin10-Ten.github.io',
-  base: '/strings',
+  base: 'strings',
   integrations: [sitemap()],
   output: 'static',
   build: {
